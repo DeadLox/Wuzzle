@@ -12,7 +12,26 @@ html, body {
 	margin:0 auto;
 	border:1px solid black;
 }
+.game-container .game-time {
+	float:left;
+	height: 30px;
+	margin:10px 15px;
+	padding:0 10px 5px;
+	font-size: 30px;
+	font-weight: bold;
+	border:1px solid black;
+}
+.game-container .game-point {
+	float:right;
+	height: 30px;
+	margin:10px 15px;
+	padding:0 10px 5px;
+	font-size: 30px;
+	font-weight: bold;
+	border:1px solid black;
+}
 .game-container .game-result {
+	clear:both;
 	height: 30px;
 	margin:10px 15px;
 	padding:0 10px 5px;
@@ -26,7 +45,7 @@ html, body {
 	list-style-type: none;
 	text-align: center;
 }
-.game-container li {
+.game-container .grille li {
 	font-family: Helvetica, Arial,sans-serif;
 	display:inline-block;
 	width: 80px;
@@ -44,10 +63,17 @@ html, body {
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE */
     user-select: none; /* CSS3 */
+    position:relative;
 }
-.game-container li:hover {
+.game-container .grille li:hover {
 	background-color: #FFCB63;
 }
-.game-container li.selected {
+.game-container .grille li.selected {
 	background-color: #FFA100;
+}
+.game-container .grille li .point {
+	font-size: 12px;
+	position: absolute;
+	top:5px;
+	right:8px;
 }
