@@ -6,20 +6,23 @@ var totalPoint = 0;
 
 var okArray = new Array();
 var koArray = new Array();
+var nbTentative = 0;
 
 var letters = new Array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
 var pointsLetter = new Array(1,3,3,2,1,4,2,4,1,8,10,1,2,1,1,3,8,1,1,1,1,4,10,10,10,10);
 
-var grille = new Array("E","U","A","P","T","R","E","S","A","N","E","R","R","Q","D","S");
+//var grille = new Array("E","U","A","P","T","R","E","S","A","N","E","R","R","Q","D","S");
 
-var cpt = 0;
+var cpt = 120;
+
+var timer;
 
 $(document).ready(function(){
 	/* ---- Création de la Database ---- */
 	//Wuzzle.indexedDB.open();
 	generateGrille(grille);
 
-	setInterval("refreshTime", 1000);
+	timer = setInterval("refreshTime()", 1000);
 
 	$('.game-container .grille li').mousedown(function(){
 		onSelect = true;
@@ -33,6 +36,7 @@ $(document).ready(function(){
 			checkWord();
 		}
 		resetHover();
+		nbTentative++;
 	});
 	$('.game-container .grille li').mouseenter(function(){
 		var numCase = getnumCase($(this));
@@ -46,8 +50,29 @@ $(document).ready(function(){
 	});
 });
 
+/**
+ * Affiche le temps écoulé
+ * 
+ * @return {[type]} [description]
+ */
 function refreshTime(){
+	cpt--;
+	if (cpt == 0) clearInterval(timer);
+	$('.game-time').text(convertToTime(cpt));
+}
 
+/**
+ * Convertit le nombre de seconde écoulé en temps MM:SS
+ * 
+ * @param  {[type]} sec [description]
+ * @return {[type]}     [description]
+ */
+function convertToTime(sec){
+	var min = Math.floor(sec/60);
+	var sec = sec - (min*60);
+	if (min < 10) min = "0" + min;
+	if (sec < 10) sec = "0" + sec;
+	return min+':'+sec;
 }
 
 /**
@@ -111,7 +136,7 @@ function checkWord(){
 	var word = $('.game-result').text();
 	if (word.length > 1) {
 		var firstLetterWord = word.charAt(0);
-		if ($.inArray(word, eval("dico"+firstLetterWord)) >= 0) {
+		if ($.inArray(word, eval("dico"+firstLetterWord)) >= 0 && $.inArray(word, okArray) == -1) {
 			console.log(word+' ok');
 			totalPoint += countWord(word);
 			refreshScrore();
