@@ -11,34 +11,29 @@ var nbTentative = 0;
 var letters = new Array("A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z");
 var pointsLetter = new Array(1,3,3,2,1,4,2,4,1,8,10,1,2,1,1,3,8,1,1,1,1,4,10,10,10,10);
 
-//var grille = new Array("E","U","A","P","T","R","E","S","A","N","E","R","R","Q","D","S");
-
 var cpt = 120;
 
 var timer;
 
+var firstCaseSelected;
+
 $(document).ready(function(){
-	/* ---- Création de la Database ---- */
-	//Wuzzle.indexedDB.open();
-	generateGrille(grille);
-
-	timer = setInterval("refreshTime()", 1000);
-
-	$('.game-container .grille li').mousedown(function(){
+	$(document).on('mousedown', '.game-container .grille li', function(){
 		onSelect = true;
 		$('.game-result').text('');
 		var numCase = getnumCase($(this));
 		addLetter($(this), numCase);
 		lastCase = numCase;
+		firstCaseSelected = $(this);
 	});
-	$(document).mouseup(function(){
+	$(document).bind('mouseup', 'document', function(){
 		if (onSelect) {
 			checkWord();
 		}
 		resetHover();
 		nbTentative++;
 	});
-	$('.game-container .grille li').mouseenter(function(){
+	$(document).on('mouseenter', '.game-container .grille li', function(){
 		var numCase = getnumCase($(this));
 		near = isNear(lastCase, numCase);
 		if (onSelect && !$(this).hasClass('selected') && near) {
@@ -49,6 +44,52 @@ $(document).ready(function(){
 		}
 	});
 });
+
+/**
+ * Remet les variables du jeu à zéro
+ * 
+ * @return {[type]} [description]
+ */
+function resetGame(){
+	cpt = 120;
+	totalPoint = 0;
+	okArray = new Array();
+	koArray = new Array();
+}
+
+/**
+ * Reset les paramètres du jeu, charge une nouvelle grille et démarre le chrono
+ * 
+ * @return {[type]} [description]
+ */
+function startNewGame(){
+	resetGame();
+	$.ajax({
+		type: 'POST',
+		url: 'ws.php',
+		data: 'action=newGame',
+		success: function(msg){
+			grille = $.parseJSON(msg);
+			generateGrille(grille);
+			clearInterval(timer);
+			timer = setInterval("refreshTime()", 1000);
+		}
+	});
+}
+
+/**
+ * Affiche un message en fonction du nombre de point du mot réalisé
+ * 
+ * @param  {[type]} point [description]
+ * @return {[type]}       [description]
+ */
+function showNote(point){
+	var note = 'Très bien';
+	var noteDiv = $('.game-note');
+	noteDiv.text(note);
+	noteDiv.stop(true, true).fadeIn('fast').animate({'font-size':'40px'}, 600).delay(200).fadeOut('slow').css({'font-size':'20px'});
+	firstCaseSelected.append('<div class="game-note-point">+'+point+'</div>').children('.game-note-point').stop(true, true).fadeIn('fast').animate({'font-size':'40px'}, 600).delay(200).fadeOut('slow').css({'font-size':'20px'});
+}
 
 /**
  * Affiche le temps écoulé
@@ -91,6 +132,7 @@ function refreshScrore(){
  * @return {[type]}        [description]
  */
 function generateGrille(grille){
+	$('.grille').html('');
 	for (var l in grille) {
 		var lettre = grille[l];
 		var point = getPointLettre(lettre);
@@ -123,6 +165,7 @@ function countWord(word){
 		var pointLetter = getPointLettre(letter);
 		totalPoint += pointLetter;
 	}
+	showNote(totalPoint);
 	console.log("Point du mot: "+totalPoint);
 	return totalPoint;
 }
@@ -179,6 +222,7 @@ function addLetter(caseLettre, numCase){
  */
 function resetHover(){
 	lastCase = 0;
+	firstCaseSelected = null;
 	onSelect = false;
 	$('.game-container .grille li').removeClass('selected');
 }

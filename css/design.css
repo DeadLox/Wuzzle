@@ -13,6 +13,25 @@ html, body {
 	width: 400px;
 	height: auto;
 	margin:0 auto;
+	position: relative;
+}
+.game-container .row {
+	margin-left:0;
+}
+.game-container .game-note,
+.game-container .game-note-point {
+	display: none;
+	position: absolute;
+	top:90px;
+	width: 100%;
+	text-align: center;
+	z-index: 10;
+
+	/* --- Deisgn --- */
+	color:white;
+	font-size: 20px;
+	font-weight: bold;
+	text-shadow: red 2px 2px, red -2px 2px, red -2px -2px, red 2px -2px; 
 }
 .game-container .game-time {
 	float:left;
@@ -85,7 +104,8 @@ html, body {
     -ms-user-select: none; /* IE */
     user-select: none; /* CSS3 */
     position:relative;
-    /* --- Design case --- */
+
+    /* --- Design --- */
     background-color: #eee;
     box-shadow: 0 5px 0 #ccc;
     border-top: 1px solid #ddd;
